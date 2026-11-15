@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#03120e">
+<title>AYOS Venue — Feature Gallery</title>
+<style>
+:root {
+ color-scheme:dark;
+ --deep:#03120e; --pine:#082b20; --emerald:#087f56;
+ --mint:#a8f0c0; --lime:#7ce577; --ivory:#f3ffe6;
+ --text:#f4fff6; --subtle:rgba(235,255,239,.68);
+ --glass:rgba(6,32,23,.30); --glass-edge:rgba(224,255,230,.23);
+ --glass-hover:rgba(222,255,227,.14);
+ --ease:cubic-bezier(.2,.7,.22,1);
+ font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+ font-synthesis:none;-webkit-font-smoothing:antialiased;
+}
+*{box-sizing:border-box}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;background:var(--deep)}
+body{margin:0;min-width:280px;color:var(--text);background:transparent;}
+button,input{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible{outline:2px solid #e7ffd7;outline-offset:3px}
+#mesh-shader{position:fixed;inset:0;display:block;width:100%;height:100%;pointer-events:none;z-index:0;background:
+ radial-gradient(ellipse 72% 72% at 78% 20%,rgba(124,229,119,.46),transparent 82%),
+ radial-gradient(ellipse 56% 64% at 8% 80%,rgba(14,124,90,.73),transparent 83%),
+ linear-gradient(140deg,#03120e,#0e7c5a 72%,#03120e);}
+body.shader-fallback::before{content:"";position:fixed;z-index:0;pointer-events:none;inset:-23%;background:
+ radial-gradient(ellipse 51% 60% at 19% 80%,rgba(5,114,73,.47),transparent 73%),
+ radial-gradient(ellipse 55% 47% at 72% 28%,rgba(78,181,105,.26),transparent 80%),
+ radial-gradient(ellipse 42% 43% at 84% 90%,rgba(124,229,119,.15),transparent 83%);
+ will-change:transform;animation:ambientDrift 21s ease-in-out infinite alternate}
+@keyframes ambientDrift{0%{transform:translate3d(-2%,1%,0) rotate(-3deg) scale(1)}100%{transform:translate3d(2%,-2%,0) rotate(3deg) scale(1.04)}}
+#shader-scrim{position:fixed;inset:0;z-index:0;pointer-events:none;background:
+ linear-gradient(180deg,rgba(0,18,11,.12),rgba(0,20,13,.20)),
+ radial-gradient(ellipse 70% 65% at 50% 52%,transparent 15%,rgba(1,15,9,.37) 100%)}
+#gallery{position:relative;z-index:1}
+.scene{height:100vh;height:100dvh;min-height:0;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:clamp(12px,2.4vh,28px) clamp(16px,3.6vw,56px);position:relative;isolation:isolate}
+.stage-wrap{width:min(100%,1190px,calc((100dvh - 207px)*16/9));min-width:0;display:flex;flex-direction:column;gap:clamp(12px,1.65vh,20px)}
+.heading-row{display:flex;align-items:baseline;gap:clamp(10px,1.5vw,22px);padding:0 clamp(2px,.4vw,6px)}
+.feature-index{flex:none;position:relative;top:-1px;font-size:clamp(11px,1vw,13px);line-height:1;letter-spacing:.06em;font-weight:650;font-variant-numeric:tabular-nums;color:rgba(214,255,210,.83)}
+.scene h2{margin:0;color:#f6fff6;font-size:clamp(20px,2.5vw,34px);font-weight:630;letter-spacing:-.045em;line-height:1.18;text-wrap:balance;text-shadow:0 3px 28px rgba(0,21,12,.25)}
+.player-card{position:relative;padding:clamp(6px,.7vw,9px);background:linear-gradient(137deg,rgba(255,255,255,.18),rgba(245,255,244,.055) 48%,rgba(255,255,255,.09));border:1px solid rgba(231,255,236,.28);border-radius:26px;box-shadow:0 20px 65px rgba(0,26,14,.28),0 4px 12px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,245,.30);backdrop-filter:blur(26px) saturate(1.25);-webkit-backdrop-filter:blur(26px) saturate(1.25)}
+.player-card:after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 1px 1px 0 rgba(255,255,255,.08)}
+.player{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;isolation:isolate;border-radius:clamp(13px,1.5vw,19px);background:#071c14}
+.media-content{display:block;width:100%;height:100%;object-fit:contain;object-position:center;background:#061810}
+.player video{cursor:pointer}
+.player .center-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:clamp(50px,5vw,72px);height:clamp(50px,5vw,72px);display:grid;place-items:center;color:#f6fff6;background:rgba(3,44,28,.46);border:1px solid rgba(231,255,235,.56);border-radius:999px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 12px 32px rgba(1,25,14,.28),inset 0 1px 0 rgba(255,255,255,.18);transition:background 250ms var(--ease),opacity 250ms var(--ease),transform 250ms var(--ease);z-index:2}
+.player .center-play:hover{background:rgba(8,127,86,.75);transform:translate(-50%,-50%) scale(1.06)}
+.player.is-playing .center-play{opacity:0;pointer-events:none}
+.player .controls{position:absolute;bottom:0;left:0;right:0;z-index:3;display:flex;align-items:center;gap:clamp(6px,.8vw,12px);height:clamp(48px,5vw,70px);padding:16px clamp(10px,2.2vw,26px) 9px;background:linear-gradient(180deg,transparent,rgba(1,15,10,.92));color:white;transition:opacity 240ms var(--ease)}
+.player.is-playing:not(:hover):not(:focus-within) .controls{opacity:0}
+.player .btn{width:32px;height:32px;flex:0 0 32px;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;color:#fff;transition:background 200ms var(--ease)}
+.player .btn:hover{background:rgba(255,255,255,.19)}
+.player svg,.carousel svg{width:18px;height:18px;display:block;pointer-events:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.player .center-play svg{width:25px;height:25px}
+.player .seek{appearance:none;-webkit-appearance:none;min-width:22px;flex:1;height:3px;margin:0;border-radius:999px;background:linear-gradient(to right,#d5ffbe 0 var(--progress,0%),rgba(255,255,255,.38) var(--progress,0%) 100%);cursor:pointer}
+.player .seek::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;background:#f0ffe3;border:0;border-radius:50%;box-shadow:0 1px 6px rgba(0,0,0,.35)}
+.player .seek::-moz-range-thumb{width:11px;height:11px;background:#f0ffe3;border:0;border-radius:50%}
+.player .time{font-size:11px;letter-spacing:.01em;font-weight:550;color:#f0fff2;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:68px;text-align:center}
+.player .edge{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:36px;height:52px;display:grid;place-items:center;color:#f6fff3;border:1px solid rgba(244,255,236,.19);background:rgba(7,52,35,.32);border-radius:13px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);opacity:0;transition:opacity 240ms var(--ease),background 240ms var(--ease)}
+.player:hover .edge,.player:focus-within .edge{opacity:1}.player .edge:hover{background:rgba(8,127,86,.76)}
+.player .edge.prev{left:12px}.player .edge.next{right:12px}
+.carousel{display:flex;align-items:center;gap:12px;min-width:0;margin-top:3px}
+.carousel .arrow{flex:0 0 40px;width:40px;height:52px;display:grid;place-items:center;color:#f5fff1;background:rgba(5,40,27,.31);border:1px solid rgba(235,255,231,.25);border-radius:15px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);transition:background 210ms var(--ease),opacity 210ms var(--ease),transform 210ms var(--ease)}
+.carousel .arrow:hover:not(:disabled){background:rgba(5,108,68,.58);transform:translateY(-1px)}.carousel .arrow:disabled{opacity:.28;cursor:default}
+.track{min-width:0;flex:1;display:flex;align-items:center;gap:11px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none;padding:5px 5px;mask-image:linear-gradient(90deg,transparent 0%,#000 2%,#000 98%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 2%,#000 98%,transparent 100%)}
+.track::-webkit-scrollbar{display:none}
+.thumb{position:relative;flex:0 0 clamp(104px,12vw,156px);aspect-ratio:16/9;padding:0;border:1px solid rgba(240,255,235,.26);border-radius:11px;overflow:hidden;background:#061810;scroll-snap-align:center;opacity:.6;transition:opacity 220ms var(--ease),border-color 220ms var(--ease),transform 220ms var(--ease),box-shadow 220ms var(--ease)}
+.thumb:hover{opacity:.93;transform:translateY(-2px)}
+.thumb.active{opacity:1;border-color:#e6ffd7;box-shadow:0 0 0 1px rgba(230,255,215,.66),0 8px 24px rgba(0,25,15,.24)}
+.thumb img{width:100%;height:100%;object-fit:contain;display:block;background:#061810}
+.thumb .play-pill{position:absolute;inset:0;display:grid;place-items:center;background:rgba(2,24,13,.14);color:#f7fff3}
+.thumb .play-pill svg{width:27px;height:27px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.5))}
+.player:fullscreen{border-radius:0}.player:fullscreen .media-content{width:100%;height:100%}
+@media(max-width:700px){.scene{padding:18px 12px}.stage-wrap{width:100%;gap:15px}.scene h2{font-size:clamp(19px,5.6vw,25px)}.feature-index{font-size:11px}.heading-row{gap:12px}.player-card{border-radius:18px;padding:5px}.player{border-radius:13px}.carousel{gap:7px}.carousel .arrow{width:32px;flex-basis:32px;height:44px;border-radius:11px}.track{gap:7px}.thumb{flex-basis:clamp(90px,27vw,120px);border-radius:8px}.player .edge{width:26px;height:36px;opacity:.65}.player .edge.prev{left:5px}.player .edge.next{right:5px}.player .controls{gap:5px;padding:11px 6px 6px;height:45px}.player .btn{width:25px;height:25px;flex-basis:25px;border-radius:7px}.player .btn svg{width:15px;height:15px}.player .time{font-size:10px;min-width:60px}.player .center-play{width:50px;height:50px}}
+@media(max-height:580px){.scene{padding:8px 12px}.stage-wrap{width:min(100%,1080px,calc((100dvh - 108px)*16/9));gap:8px}.scene h2{font-size:19px}.thumb{flex-basis:90px}.carousel .arrow{height:34px}}
+@media(prefers-reduced-motion:reduce){body.shader-fallback::before{animation:none}html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="mesh-shader" aria-hidden="true"></canvas>
+<div id="shader-scrim" aria-hidden="true"></div>
+<main id="gallery"></main>
+<script type="application/json" id="gallery-data">[{"num":1,"title":"Sign-in & password recovery","start":0.0,"end":12.0,"src":"clips/01_authentication_and_password_recovery.mp4","photos":[{"src":"photos/01_001_00m00s75.jpg","time":0.75},{"src":"photos/01_002_00m04s50.jpg","time":4.5}]},{"num":2,"title":"Dashboard & analytics","start":12.0,"end":38.0,"src":"clips/02_dashboard_and_analytics.mp4","photos":[{"src":"photos/02_003_00m13s00.jpg","time":13.0},{"src":"photos/02_004_00m15s00.jpg","time":15.0},{"src":"photos/02_005_00m18s00.jpg","time":18.0},{"src":"photos/02_006_00m21s75.jpg","time":21.75},{"src":"photos/02_007_00m25s50.jpg","time":25.5},{"src":"photos/02_008_00m29s00.jpg","time":29.0},{"src":"photos/02_009_00m31s50.jpg","time":31.5},{"src":"photos/02_010_00m36s00.jpg","time":36.0}]},{"num":3,"title":"Schedule & manual booking","start":38.0,"end":60.0,"src":"clips/03_schedule_and_manual_booking.mp4","photos":[{"src":"photos/03_011_00m38s75.jpg","time":38.75},{"src":"photos/03_012_00m42s50.jpg","time":42.5},{"src":"photos/03_013_00m44s50.jpg","time":44.5},{"src":"photos/03_014_00m47s25.jpg","time":47.25},{"src":"photos/03_015_00m49s00.jpg","time":49.0},{"src":"photos/03_016_00m51s00.jpg","time":51.0},{"src":"photos/03_017_00m53s25.jpg","time":53.25},{"src":"photos/03_018_00m55s50.jpg","time":55.5},{"src":"photos/03_019_00m56s25.jpg","time":56.25},{"src":"photos/03_020_00m59s25.jpg","time":59.25}]},{"num":4,"title":"Schedule slot actions","start":60.0,"end":68.0,"src":"clips/04_schedule_slot_actions.mp4","photos":[{"src":"photos/04_023_01m06s00.jpg","time":66.0},{"src":"photos/04_024_01m07s25.jpg","time":67.25}]},{"num":5,"title":"Booking management","start":68.0,"end":81.0,"src":"clips/05_bookings_table_and_filters.mp4","photos":[{"src":"photos/05_025_01m09s00.jpg","time":69.0},{"src":"photos/05_027_01m15s00.jpg","time":75.0},{"src":"photos/05_028_01m18s00.jpg","time":78.0}]},{"num":6,"title":"Rescheduling & court transfers","start":81.0,"end":95.0,"src":"clips/06_rescheduling_and_court_transfer.mp4","photos":[{"src":"photos/06_029_01m22s50.jpg","time":82.5},{"src":"photos/06_030_01m23s00.jpg","time":83.0},{"src":"photos/06_031_01m24s25.jpg","time":84.25},{"src":"photos/06_032_01m25s50.jpg","time":85.5},{"src":"photos/06_033_01m26s50.jpg","time":86.5},{"src":"photos/06_034_01m29s25.jpg","time":89.25},{"src":"photos/06_035_01m31s50.jpg","time":91.5},{"src":"photos/06_036_01m33s75.jpg","time":93.75}]},{"num":7,"title":"Booking details & players","start":95.0,"end":115.0,"src":"clips/07_booking_details_and_player_management.mp4","photos":[{"src":"photos/07_037_01m35s25.jpg","time":95.25},{"src":"photos/07_038_01m37s50.jpg","time":97.5},{"src":"photos/07_039_01m40s50.jpg","time":100.5},{"src":"photos/07_041_01m44s75.jpg","time":104.75},{"src":"photos/07_042_01m47s50.jpg","time":107.5},{"src":"photos/07_044_01m52s50.jpg","time":112.5}]},{"num":8,"title":"Booking navigation & check-in","start":115.0,"end":139.0,"src":"clips/08_booking_navigation_and_check_in.mp4","photos":[{"src":"photos/08_046_01m55s50.jpg","time":115.5},{"src":"photos/08_047_01m57s75.jpg","time":117.75},{"src":"photos/08_048_02m00s00.jpg","time":120.0},{"src":"photos/08_049_02m03s75.jpg","time":123.75},{"src":"photos/08_050_02m06s00.jpg","time":126.0},{"src":"photos/08_051_02m11s00.jpg","time":131.0},{"src":"photos/08_052_02m12s75.jpg","time":132.75},{"src":"photos/08_053_02m16s00.jpg","time":136.0},{"src":"photos/08_054_02m18s00.jpg","time":138.0}]},{"num":9,"title":"Check-in & QR scanning","start":139.0,"end":177.0,"src":"clips/09_check_in_and_qr_scanner.mp4","photos":[{"src":"photos/09_055_02m20s00.jpg","time":140.0},{"src":"photos/09_057_02m26s00.jpg","time":146.0},{"src":"photos/09_058_02m27s75.jpg","time":147.75},{"src":"photos/09_059_02m30s00.jpg","time":150.0},{"src":"photos/09_060_02m31s00.jpg","time":151.0},{"src":"photos/09_063_02m42s00.jpg","time":162.0},{"src":"photos/09_064_02m43s50.jpg","time":163.5},{"src":"photos/09_065_02m47s25.jpg","time":167.25},{"src":"photos/09_067_02m54s25.jpg","time":174.25}]},{"num":10,"title":"Customer profiles","start":177.0,"end":186.0,"src":"clips/10_customer_profiles.mp4","photos":[{"src":"photos/10_068_02m58s00.jpg","time":178.0},{"src":"photos/10_069_03m00s00.jpg","time":180.0},{"src":"photos/10_070_03m02s00.jpg","time":182.0},{"src":"photos/10_071_03m02s75.jpg","time":182.75},{"src":"photos/10_072_03m04s50.jpg","time":184.5}]},{"num":11,"title":"Rentals & returns","start":186.0,"end":204.0,"src":"clips/11_rentals_overview_and_returns.mp4","photos":[{"src":"photos/11_073_03m07s00.jpg","time":187.0},{"src":"photos/11_074_03m09s75.jpg","time":189.75},{"src":"photos/11_076_03m13s50.jpg","time":193.5},{"src":"photos/11_077_03m14s25.jpg","time":194.25},{"src":"photos/11_078_03m16s00.jpg","time":196.0},{"src":"photos/11_079_03m17s75.jpg","time":197.75},{"src":"photos/11_080_03m19s50.jpg","time":199.5},{"src":"photos/11_081_03m22s00.jpg","time":202.0}]},{"num":12,"title":"Rental reservations & charges","start":204.0,"end":229.0,"src":"clips/12_rental_reservations_and_charges.mp4","photos":[{"src":"photos/12_082_03m24s00.jpg","time":204.0},{"src":"photos/12_083_03m24s50.jpg","time":204.5},{"src":"photos/12_084_03m27s00.jpg","time":207.0},{"src":"photos/12_085_03m30s00.jpg","time":210.0},{"src":"photos/12_086_03m32s25.jpg","time":212.25},{"src":"photos/12_087_03m33s75.jpg","time":213.75},{"src":"photos/12_088_03m37s50.jpg","time":217.5},{"src":"photos/12_089_03m39s00.jpg","time":219.0},{"src":"photos/12_090_03m40s25.jpg","time":220.25},{"src":"photos/12_091_03m44s00.jpg","time":224.0}]},{"num":13,"title":"Equipment & inventory","start":229.0,"end":260.0,"src":"clips/13_rental_equipment_and_inventory.mp4","photos":[{"src":"photos/13_093_03m50s00.jpg","time":230.0},{"src":"photos/13_094_03m52s50.jpg","time":232.5},{"src":"photos/13_095_03m57s50.jpg","time":237.5},{"src":"photos/13_096_03m59s50.jpg","time":239.5},{"src":"photos/13_097_04m02s00.jpg","time":242.0},{"src":"photos/13_099_04m06s00.jpg","time":246.0},{"src":"photos/13_100_04m10s50.jpg","time":250.5},{"src":"photos/13_101_04m12s00.jpg","time":252.0},{"src":"photos/13_102_04m14s75.jpg","time":254.75},{"src":"photos/13_103_04m15s75.jpg","time":255.75},{"src":"photos/13_104_04m17s25.jpg","time":257.25},{"src":"photos/13_105_04m18s00.jpg","time":258.0}]},{"num":14,"title":"Courts & pricing","start":260.0,"end":294.0,"src":"clips/14_courts_and_pricing.mp4","photos":[{"src":"photos/14_106_04m22s50.jpg","time":262.5},{"src":"photos/14_107_04m26s25.jpg","time":266.25},{"src":"photos/14_108_04m27s50.jpg","time":267.5},{"src":"photos/14_109_04m30s50.jpg","time":270.5},{"src":"photos/14_110_04m33s00.jpg","time":273.0},{"src":"photos/14_111_04m36s00.jpg","time":276.0},{"src":"photos/14_113_04m39s75.jpg","time":279.75},{"src":"photos/14_114_04m43s00.jpg","time":283.0},{"src":"photos/14_115_04m46s00.jpg","time":286.0},{"src":"photos/14_116_04m49s00.jpg","time":289.0},{"src":"photos/14_117_04m51s75.jpg","time":291.75}]},{"num":15,"title":"Court availability","start":294.0,"end":314.0,"src":"clips/15_court_availability_schedule.mp4","photos":[{"src":"photos/15_118_04m56s25.jpg","time":296.25},{"src":"photos/15_119_04m57s75.jpg","time":297.75},{"src":"photos/15_120_05m00s75.jpg","time":300.75},{"src":"photos/15_121_05m07s00.jpg","time":307.0},{"src":"photos/15_122_05m10s00.jpg","time":310.0},{"src":"photos/15_123_05m13s50.jpg","time":313.5}]},{"num":16,"title":"Booking rules","start":314.0,"end":322.0,"src":"clips/16_booking_rules.mp4","photos":[{"src":"photos/16_124_05m16s50.jpg","time":316.5},{"src":"photos/16_125_05m18s00.jpg","time":318.0},{"src":"photos/16_126_05m20s00.jpg","time":320.0},{"src":"photos/16_127_05m21s75.jpg","time":321.75}]},{"num":17,"title":"Rental rules","start":322.0,"end":330.0,"src":"clips/17_rental_rules.mp4","photos":[{"src":"photos/17_129_05m24s75.jpg","time":324.75},{"src":"photos/17_130_05m26s00.jpg","time":326.0},{"src":"photos/17_131_05m27s25.jpg","time":327.25}]},{"num":18,"title":"Staff & access","start":330.0,"end":343.0,"src":"clips/18_staff_and_access.mp4","photos":[{"src":"photos/18_132_05m30s00.jpg","time":330.0},{"src":"photos/18_133_05m33s00.jpg","time":333.0},{"src":"photos/18_135_05m37s50.jpg","time":337.5},{"src":"photos/18_136_05m38s50.jpg","time":338.5},{"src":"photos/18_137_05m42s00.jpg","time":342.0}]},{"num":19,"title":"Venue profile & gallery","start":343.0,"end":366.0,"src":"clips/19_venue_profile_and_photo_gallery.mp4","photos":[{"src":"photos/19_138_05m45s75.jpg","time":345.75},{"src":"photos/19_139_05m47s50.jpg","time":347.5},{"src":"photos/19_140_05m50s50.jpg","time":350.5},{"src":"photos/19_142_05m55s00.jpg","time":355.0},{"src":"photos/19_143_05m57s00.jpg","time":357.0},{"src":"photos/19_144_06m00s75.jpg","time":360.75},{"src":"photos/19_145_06m03s00.jpg","time":363.0},{"src":"photos/19_146_06m04s00.jpg","time":364.0},{"src":"photos/19_147_06m05s50.jpg","time":365.5}]},{"num":20,"title":"Embedded booking to QR payment","start":366.0,"end":396.0,"src":"clips/20_embedded_booking_to_qr_payment.mp4","photos":[{"src":"photos/20_148_06m07s00.jpg","time":367.0},{"src":"photos/20_149_06m14s25.jpg","time":374.25},{"src":"photos/20_150_06m16s50.jpg","time":376.5},{"src":"photos/20_151_06m18s75.jpg","time":378.75},{"src":"photos/20_152_06m20s25.jpg","time":380.25},{"src":"photos/20_153_06m21s00.jpg","time":381.0},{"src":"photos/20_155_06m28s50.jpg","time":388.5},{"src":"photos/20_156_06m29s75.jpg","time":389.75},{"src":"photos/20_157_06m31s50.jpg","time":391.5},{"src":"photos/20_158_06m32s50.jpg","time":392.5},{"src":"photos/20_159_06m33s50.jpg","time":393.5},{"src":"photos/20_160_06m34s50.jpg","time":394.5}]},{"num":21,"title":"Public booking website","start":396.0,"end":423.0,"src":"clips/21_public_booking_website.mp4","photos":[{"src":"photos/21_161_06m42s75.jpg","time":402.75},{"src":"photos/21_162_06m45s00.jpg","time":405.0},{"src":"photos/21_163_06m47s25.jpg","time":407.25},{"src":"photos/21_164_06m48s50.jpg","time":408.5},{"src":"photos/21_165_06m51s00.jpg","time":411.0},{"src":"photos/21_166_06m54s00.jpg","time":414.0},{"src":"photos/21_167_06m55s50.jpg","time":415.5},{"src":"photos/21_168_06m57s75.jpg","time":417.75},{"src":"photos/21_169_07m01s50.jpg","time":421.5}]},{"num":22,"title":"Payments & transactions","start":423.0,"end":434.0,"src":"clips/22_payments_and_payment_details.mp4","photos":[{"src":"photos/22_170_07m04s00.jpg","time":424.0},{"src":"photos/22_171_07m06s00.jpg","time":426.0},{"src":"photos/22_172_07m08s25.jpg","time":428.25},{"src":"photos/22_173_07m12s00.jpg","time":432.0}]},{"num":23,"title":"Collect payment & QR","start":434.0,"end":450.0,"src":"clips/23_collect_payment_and_qr.mp4","photos":[{"src":"photos/23_174_07m15s00.jpg","time":435.0},{"src":"photos/23_175_07m17s00.jpg","time":437.0},{"src":"photos/23_176_07m19s00.jpg","time":439.0},{"src":"photos/23_177_07m21s00.jpg","time":441.0},{"src":"photos/23_178_07m24s00.jpg","time":444.0},{"src":"photos/23_179_07m27s50.jpg","time":447.5},{"src":"photos/23_180_07m28s50.jpg","time":448.5}]},{"num":24,"title":"Deposits & balances","start":450.0,"end":466.0,"src":"clips/24_deposits_and_balances.mp4","photos":[{"src":"photos/24_182_07m32s25.jpg","time":452.25},{"src":"photos/24_183_07m34s50.jpg","time":454.5},{"src":"photos/24_185_07m39s75.jpg","time":459.75},{"src":"photos/24_186_07m42s00.jpg","time":462.0}]},{"num":25,"title":"Refunds & processing","start":466.0,"end":500.0,"src":"clips/25_refund_requests_and_processing.mp4","photos":[{"src":"photos/25_188_07m47s00.jpg","time":467.0},{"src":"photos/25_189_07m49s50.jpg","time":469.5},{"src":"photos/25_190_07m51s75.jpg","time":471.75},{"src":"photos/25_191_07m53s00.jpg","time":473.0},{"src":"photos/25_192_07m54s75.jpg","time":474.75},{"src":"photos/25_194_07m59s00.jpg","time":479.0},{"src":"photos/25_195_08m01s50.jpg","time":481.5},{"src":"photos/25_196_08m04s00.jpg","time":484.0},{"src":"photos/25_197_08m06s00.jpg","time":486.0},{"src":"photos/25_198_08m08s00.jpg","time":488.0},{"src":"photos/25_201_08m15s00.jpg","time":495.0},{"src":"photos/25_202_08m18s75.jpg","time":498.75}]},{"num":26,"title":"Reports","start":500.0,"end":505.5,"src":"clips/26_reports_page.mp4","photos":[{"src":"photos/26_203_08m21s00.jpg","time":501.0}]}]</script>
+<script>
+// Standalone, dependency-free mesh-drift WebGL background using the reference palette.
+(()=>{
+ 'use strict';
+ const canvas=document.getElementById('mesh-shader');
+ if(!canvas)return;
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+ let gl;
+ try{gl=canvas.getContext('webgl',{alpha:false,antialias:false,depth:false,stencil:false,powerPreference:'low-power'});}
+ catch(e){return;}
+ if(!gl){document.body.classList.add('shader-fallback');return;} // CSS mesh-drift fallback.
+ const vertex=`attribute vec2 a_position;void main(){gl_Position=vec4(a_position,0.0,1.0);}`;
+ const fragment=`
+ precision highp float;
+ uniform vec2 u_resolution;
+ uniform float u_time;
+ vec3 c0=vec3(0.012,0.071,0.055);   // #03120E
+ vec3 c1=vec3(0.055,0.486,0.353);   // #0E7C5A
+ vec3 c2=vec3(0.486,0.898,0.467);   // #7CE577
+ vec3 c3=vec3(0.957,1.000,0.780);   // #F4FFC7
+ float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+ float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}
+ float fbm(vec2 p){float v=0.;float a=.5;for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.01+vec2(14.1,3.7);a*=.5;}return v;}
+ float glow(vec2 p,vec2 ctr,float sx,float sy){vec2 q=(p-ctr)/vec2(sx,sy);return exp(-dot(q,q)*1.5);}
+ void main(){
+  vec2 uv=gl_FragCoord.xy/u_resolution.xy;
+  float t=u_time*.075;
+  // Slow domain-warped green 'mesh drift' rather than a flat CSS gradient.
+  vec2 warp=vec2(fbm(uv*2.1+vec2(t,-t*.32)),fbm(uv*2.2+vec2(-t*.48,t*.6)));
+  vec2 p=uv+.16*(warp-.5)+vec2(.024*sin(uv.y*5.5+t),.024*cos(uv.x*4.2-t*.7));
+  vec2 a=vec2(.19+.13*sin(t*.81),.75+.10*cos(t*.53));
+  vec2 b=vec2(.78+.09*cos(t*.57),.29+.14*sin(t*.72));
+  vec2 c=vec2(.62+.15*sin(t*.38+1.1),.81+.09*cos(t*.77));
+  float v1=glow(p,a,.54,.47);
+  float v2=glow(p,b,.43,.51);
+  float v3=glow(p,c,.40,.33);
+  float undulation=fbm(p*2.3+vec2(t*.43,-t*.2));
+  vec3 col=mix(c0,c1,clamp(.15+.78*v1+.46*v2+.11*undulation,0.,.96));
+  col=mix(col,c2,clamp(.73*v2+.45*v3-.17,0.,.76));
+  col=mix(col,c3,clamp(.41*v3+.23*v2-.20,0.,.29));
+  // Slight forest-green vignette keeps high-contrast type legible.
+  float radial=length((uv-.5)*vec2(1.12,1.04));
+  col*=1.-.29*smoothstep(.23,.86,radial);
+  // Controlled grain helps the image feel natural instead of plasticky.
+  float grain=(hash(gl_FragCoord.xy+vec2(fract(u_time)*1.7))-0.5)*.011;
+  gl_FragColor=vec4(clamp(col+grain,0.,1.),1.);
+ }`;
+ const compile=(type,source)=>{const sh=gl.createShader(type);gl.shaderSource(sh,source);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS)){console.warn('Shader fallback:',gl.getShaderInfoLog(sh));gl.deleteShader(sh);return null;}return sh;};
+ const vert=compile(gl.VERTEX_SHADER,vertex),frag=compile(gl.FRAGMENT_SHADER,fragment);
+ if(!vert||!frag){canvas.style.display='none';document.body.classList.add('shader-fallback');return;}
+ const program=gl.createProgram();gl.attachShader(program,vert);gl.attachShader(program,frag);gl.linkProgram(program);
+ if(!gl.getProgramParameter(program,gl.LINK_STATUS)){console.warn('Shader fallback: unable to link program');canvas.style.display='none';document.body.classList.add('shader-fallback');return;}
+ gl.useProgram(program);
+ const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+ gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+ const pos=gl.getAttribLocation(program,'a_position');gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
+ const res=gl.getUniformLocation(program,'u_resolution');
+ const time=gl.getUniformLocation(program,'u_time');
+ let raf=null,frame=0,oldTime=0,stopped=false;
+ const resize=()=>{const density=Math.min(devicePixelRatio||1,1.4);const w=Math.round(innerWidth*density);const h=Math.round(innerHeight*density);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}gl.uniform2f(res,canvas.width,canvas.height);};
+ const render=(stamp)=>{
+  if(stopped||document.hidden)return;
+  raf=requestAnimationFrame(render);
+  if(stamp-oldTime<28&&!reduce.matches)return;
+  oldTime=stamp;
+  resize();gl.uniform1f(time,reduce.matches?0:stamp*.001);
+  gl.drawArrays(gl.TRIANGLES,0,6);
+  if(reduce.matches&&raf){cancelAnimationFrame(raf);raf=null;}
+ };
+ const start=()=>{if(stopped||document.hidden||raf!==null)return;raf=requestAnimationFrame(render);};
+ const stop=()=>{if(raf!==null)cancelAnimationFrame(raf);raf=null;};
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else start()});
+ window.addEventListener('pagehide',stop);
+ canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();stopped=true;stop();});
+ start();
+})();
+</script>
+<script>
+(()=>{
+'use strict';
+const data=JSON.parse(document.querySelector('#gallery-data').textContent);
+const gallery=document.querySelector('#gallery');
+const icons={play:'<path d="m8 5 12 7-12 7z" fill="currentColor" stroke="none"/>',pause:'<rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/>',prev:'<path d="m15 18-6-6 6-6"/>',next:'<path d="m9 18 6-6-6-6"/>',mute:'<path d="M10 5 6 9H3v6h3l7 4V5ZM16 9l5 6m0-6-5 6"/>',volume:'<path d="M10 5 6 9H3v6h3l7 4V5ZM15 9a4 4 0 0 1 0 6m2-9a8 8 0 0 1 0 12"/>',expand:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>'};
+const svg=(key)=>`<svg viewBox="0 0 24 24" aria-hidden="true">${icons[key]}</svg>`;
+const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const format=sec=>{sec=isFinite(sec)?Math.max(0,Math.floor(sec)):0;return `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`};
+let activeVideo=null;
+const actors=new Map();
+for(const feat of data){
+ const assets=[{kind:'video',src:feat.src,poster:feat.photos[0]?.src},...feat.photos.map(p=>({kind:'image',src:p.src,time:p.time}))];
+ const section=document.createElement('section');section.className='scene';section.id='feature-'+String(feat.num).padStart(2,'0');
+ section.innerHTML=`<div class="stage-wrap"><div class="heading-row"><span class="feature-index" aria-hidden="true">${String(feat.num).padStart(2,'0')}</span><h2>${escape(feat.title)}</h2></div><div class="player-card"><div class="player" role="group" aria-label="${escape(feat.title)}"></div></div><div class="carousel" role="group" aria-label="Screenshots carousel"><button class="arrow arrow-prev" type="button" aria-label="Previous">${svg('prev')}</button><div class="track" role="group" aria-label="Video and screenshots"></div><button class="arrow arrow-next" type="button" aria-label="Next">${svg('next')}</button></div></div>`;
+ gallery.append(section);
+ const player=section.querySelector('.player');const track=section.querySelector('.track');const bprev=section.querySelector('.arrow-prev'),bnext=section.querySelector('.arrow-next');
+ const thumbs=[];let current=0;let currentVideo=null;
+ assets.forEach((item,i)=>{
+  const b=document.createElement('button');b.className='thumb';b.type='button';b.title=item.kind==='video'?'Full feature video':`Screenshot ${i}`;b.setAttribute('aria-label',item.kind==='video'?'Play full feature video':`View screenshot ${i}`);b.setAttribute('aria-pressed',i===0?'true':'false');
+  b.innerHTML=`<img src="${escape(item.kind==='video'?item.poster:item.src)}" loading="lazy" alt=""/>${item.kind==='video'?`<span class="play-pill">${svg('play')}</span>`:''}`;
+  b.addEventListener('click',()=>show(i,true));track.appendChild(b);thumbs.push(b);
+ });
+ function pause(){if(currentVideo){currentVideo.pause();if(activeVideo===currentVideo)activeVideo=null}}
+ function show(which,focusThumb=false){
+  const index=Math.min(assets.length-1,Math.max(0,which));current=index;pause();currentVideo=null;
+  const item=assets[current];player.className='player';player.replaceChildren();
+  if(item.kind==='image'){
+   const img=document.createElement('img');img.className='media-content';img.src=item.src;img.alt=`${feat.title} screenshot ${current}`;img.loading='eager';player.append(img);
+  }else{
+   const video=document.createElement('video');video.className='media-content';video.src=item.src;video.poster=item.poster||'';video.preload='metadata';video.playsInline=true;video.setAttribute('aria-label',feat.title+' full demonstration');player.append(video);currentVideo=video;
+   const center=document.createElement('button');center.type='button';center.className='center-play';center.setAttribute('aria-label','Play or pause');center.innerHTML=svg('play');player.append(center);
+   const controls=document.createElement('div');controls.className='controls';controls.setAttribute('role','toolbar');controls.setAttribute('aria-label','Video controls');
+   controls.innerHTML=`<button type="button" class="btn toggle" aria-label="Play">${svg('play')}</button><input class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek"><span class="time">0:00 / 0:00</span><button type="button" class="btn mute" aria-label="Mute">${svg('volume')}</button><button type="button" class="btn expand" aria-label="Fullscreen">${svg('expand')}</button>`;
+   player.append(controls);
+   const playBtn=controls.querySelector('.toggle');const seek=controls.querySelector('.seek');const time=controls.querySelector('.time');const mute=controls.querySelector('.mute');
+   function toggle(){if(video.paused){if(activeVideo&&activeVideo!==video)activeVideo.pause();const result=video.play();if(result&&result.catch)result.catch(()=>{})}else video.pause()}
+   center.addEventListener('click',toggle);playBtn.addEventListener('click',toggle);video.addEventListener('click',toggle);
+   video.addEventListener('play',()=>{player.classList.add('is-playing');activeVideo=video;center.innerHTML=svg('pause');playBtn.innerHTML=svg('pause');playBtn.setAttribute('aria-label','Pause')});
+   video.addEventListener('pause',()=>{player.classList.remove('is-playing');center.innerHTML=svg('play');playBtn.innerHTML=svg('play');playBtn.setAttribute('aria-label','Play')});
+   function progress(){const d=Number.isFinite(video.duration)?video.duration:0;const p=d?1000*video.currentTime/d:0;seek.value=String(p);seek.style.setProperty('--progress',`${p/10}%`);time.textContent=`${format(video.currentTime)} / ${format(d)}`}
+   video.addEventListener('timeupdate',progress);video.addEventListener('loadedmetadata',progress);video.addEventListener('durationchange',progress);
+   seek.addEventListener('input',()=>{if(Number.isFinite(video.duration))video.currentTime=Number(seek.value)/1000*video.duration;progress()});
+   mute.addEventListener('click',()=>{video.muted=!video.muted;mute.innerHTML=svg(video.muted?'mute':'volume');mute.setAttribute('aria-label',video.muted?'Unmute':'Mute')});
+   controls.querySelector('.expand').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else player.requestFullscreen?.()});
+  }
+  function edge(which,direction){const b=document.createElement('button');b.className='edge '+direction;b.type='button';b.setAttribute('aria-label',direction==='prev'?'Previous slide':'Next slide');b.innerHTML=svg(direction==='prev'?'prev':'next');b.addEventListener('click',()=>show(which,true));player.append(b)}
+  if(current>0)edge(current-1,'prev');if(current<assets.length-1)edge(current+1,'next');
+  thumbs.forEach((btn,i)=>{btn.classList.toggle('active',i===current);btn.setAttribute('aria-pressed',i===current?'true':'false')});
+  bprev.disabled=current===0;bnext.disabled=current>=assets.length-1;
+  if(focusThumb){const b=thumbs[current];const left=b.offsetLeft-track.offsetLeft-(track.clientWidth-b.clientWidth)/2;track.scrollTo({left,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}
+ }
+ bprev.addEventListener('click',()=>show(current-1,true));bnext.addEventListener('click',()=>show(current+1,true));
+ actors.set(section,{show,pause,getCurrent:()=>current});
+ // Maintain a useful static screenshot while distant players have not been mounted.
+ if(assets[0].poster){const p=document.createElement('img');p.className='media-content';p.src=assets[0].poster;p.alt='Video preview';p.loading='lazy';player.append(p)}
+ thumbs[0]?.classList.add('active');bprev.disabled=true;
+ }
+const observer=new IntersectionObserver(entries=>{for(const e of entries){const a=actors.get(e.target);if(!a)continue;if(e.isIntersecting){if(!e.target.dataset.started){a.show(0,false);e.target.dataset.started='yes'}}else a.pause()}},{threshold:.01,rootMargin:'80px 0px'});
+for(const s of document.querySelectorAll('.scene'))observer.observe(s);
+document.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;const section=[...document.querySelectorAll('.scene')].find(s=>{const b=s.getBoundingClientRect();return b.top<=innerHeight/2&&b.bottom>=innerHeight/2});if(!section)return;const a=actors.get(section);a.show(a.getCurrent()+(e.key==='ArrowRight'?1:-1),true);e.preventDefault()});
+})();
+</script>
+</body>
+</html>
